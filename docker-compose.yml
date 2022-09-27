@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  nestjs-api:
+    container_name: nest-api
+    build:
+     dockerfile: Dockerfile
+     context: .
+      # Only will build development stage from our dockerfile
+     target: builder
+    volumes:
+     - .:/usr/src/app
+#   env_file:
+#   - .env
+    # Run a command against the development stage of the image
+    command: npm run start:dev
+    ports:
+      - 3001:3001
+  
+  redis:
+    image: redis
+    command: --port 6379
+    container_name: nest-redis
+    restart: unless-stopped
+    ports:
+    - "6379:6379"
+
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+    container_name: nest-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: DB
